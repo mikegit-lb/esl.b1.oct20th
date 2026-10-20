@@ -1,0 +1,1186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LOL Speaking Lab — B1 Speaking Lessons</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600&family=Permanent+Marker&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg-start: #ff00cc;
+    --bg-end: #333399;
+    --ink: #22223b;
+    --paper: #ffffff;
+    --accent: #ffd700;
+    --pink: #ff4d94;
+    --cyan: #00f2ff;
+    --lime: #b5ff00;
+    --orange: #ff9f1c;
+    --red: #ff4757;
+    --shadow: 0 8px 24px rgba(0,0,0,0.18);
+    --radius: 24px;
+  }
+
+  * { box-sizing: border-box; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    margin: 0;
+    font-family: 'Fredoka', system-ui, -apple-system, Segoe UI, Roboto, 'Comic Sans MS', cursive;
+    background: linear-gradient(135deg, var(--bg-start), var(--bg-end));
+    min-height: 100vh;
+    color: var(--ink);
+    overflow-x: hidden;
+  }
+
+  h1, h2, h3, .display-font { font-family: 'Permanent Marker', cursive; }
+
+  #confetti {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 60;
+  }
+
+  header {
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    padding: 16px 20px;
+    background: rgba(255,255,255,0.75);
+    backdrop-filter: blur(12px);
+    border-bottom: 4px solid rgba(255,255,255,0.5);
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    flex-wrap: wrap;
+  }
+
+  .logo {
+    font-family: 'Permanent Marker', cursive;
+    font-size: 1.5rem;
+    color: var(--ink);
+    text-decoration: none;
+    text-shadow: 2px 2px 0 var(--accent);
+    margin-right: auto;
+    letter-spacing: 1px;
+  }
+
+  .logo span { color: var(--pink); }
+
+  .hud {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    font-size: 0.95rem;
+    font-weight: 700;
+  }
+
+  .hud .pill {
+    padding: 6px 14px;
+    border-radius: 20px;
+    background: var(--paper);
+    border: 3px solid var(--ink);
+    box-shadow: var(--shadow);
+  }
+
+  .hud .timer { color: var(--red); }
+  .hud .score { color: var(--lime); }
+
+  main { padding: 20px 12px; max-width: 900px; margin: 0 auto; }
+  section { display: none; }
+  section.active { display: block; }
+
+  .card {
+    background: var(--paper);
+    border-radius: var(--radius);
+    padding: 30px;
+    box-shadow: var(--shadow);
+    border: 5px solid var(--ink);
+    position: relative;
+    overflow: hidden;
+    margin-bottom: 24px;
+    animation: popIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) both;
+  }
+
+  .card::before {
+    content: "";
+    position: absolute;
+    top: -10px; left: -10px; right: -10px; bottom: -10px;
+    background: conic-gradient(from 0deg, var(--pink), var(--cyan), var(--lime), var(--orange), var(--pink));
+    z-index: -1;
+    animation: spin 8s linear infinite;
+    opacity: 0.9;
+  }
+
+  @keyframes spin { to { transform: rotate(360deg); } }
+  @keyframes popIn {
+    from { opacity: 0; transform: scale(0.9) translateY(20px); }
+    to { opacity: 1; transform: scale(1) translateY(0); }
+  }
+
+  .tag {
+    display: inline-block;
+    font-family: 'Permanent Marker', cursive;
+    font-size: 1.1rem;
+    padding: 6px 16px;
+    border-radius: 12px;
+    color: #fff;
+    border: 2px solid #000;
+    box-shadow: 3px 3px 0 #000;
+  }
+
+  .tag.emoji-excuse { background: var(--pink); }
+  .tag.emoji-advice { background: var(--cyan); color: var(--ink); }
+  .tag.emoji-celeb { background: var(--orange); }
+  .tag.emoji-story { background: var(--lime); color: var(--ink); }
+  .tag.emoji-acting { background: var(--red); }
+
+  h2 { font-size: 2rem; margin: 0 0 8px 0; text-shadow: 2px 2px 0 rgba(0,0,0,0.1); }
+  p.lead { font-size: 1.05rem; margin: 0 0 22px 0; opacity: 0.9; }
+
+  .hero { text-align: center; }
+  .hero h1 { font-size: clamp(2.2rem, 8vw, 4rem); margin: 10px 0 6px; text-shadow: 4px 4px 0 #000, 0 0 20px var(--accent); }
+  .hero .subtitle { font-size: 1.3rem; margin-bottom: 26px; color: var(--paper); text-shadow: 1px 1px 0 #000; }
+
+  .btn-row { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; margin-bottom: 20px; }
+
+  button.btn {
+    font-family: inherit;
+    font-size: 1rem;
+    font-weight: 700;
+    padding: 14px 26px;
+    border-radius: 14px;
+    border: 4px solid #000;
+    background: var(--accent);
+    color: var(--ink);
+    cursor: pointer;
+    box-shadow: 6px 6px 0 #000;
+    transition: transform 0.1s, filter 0.2s;
+    outline: none;
+  }
+
+  button.btn:active { transform: translate(4px, 4px); box-shadow: 2px 2px 0 #000; }
+  button.btn:hover { filter: brightness(1.15); }
+
+  button.btn.big { padding: 18px 34px; font-size: 1.2rem; }
+
+  button.ghost { background: var(--paper); color: var(--ink); }
+  button.primary { background: var(--lime); color: var(--ink); }
+  button.danger { background: var(--red); color: #fff; }
+
+  .exercise-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 16px;
+    margin-top: 10px;
+  }
+
+  .ex-card {
+    background: var(--paper);
+    border-radius: var(--radius);
+    border: 5px solid #000;
+    padding: 22px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+    cursor: pointer;
+    transition: transform 0.2s, box-shadow 0.2s;
+  }
+
+  .ex-card:hover { transform: translateY(-6px) rotate(-1deg); box-shadow: 0 12px 30px rgba(0,0,0,0.25); }
+  .ex-card:active { transform: translateY(0) rotate(0deg); }
+
+  .ex-card .big-emoji { font-size: 3rem; display: block; margin-bottom: 10px; }
+  .ex-card h3 { margin: 0 0 6px 0; font-size: 1.35rem; }
+  .ex-card p { font-size: 0.9rem; opacity: 0.85; margin: 0; }
+
+  .ex-card .count {
+    position: absolute; top: 10px; right: 12px;
+    font-family: 'Permanent Marker', cursive; font-size: 1rem;
+    background: #000; color: var(--accent);
+    padding: 4px 10px; border-radius: 8px; border: 2px solid var(--accent);
+  }
+
+  .ex-select-title { text-align: center; margin-bottom: 26px; }
+
+  .qs-header {
+    display: flex; justify-content: space-between; align-items: center;
+    margin-bottom: 18px; gap: 12px; flex-wrap: wrap;
+  }
+
+  .qs-title { font-size: 1.5rem; margin: 0; font-family: 'Permanent Marker', cursive; }
+  .qs-progress { font-weight: 700; font-size: 1rem; color: #555; }
+
+  .question-box {
+    background: #fffef0;
+    border: 6px dashed var(--ink);
+    border-radius: 20px;
+    padding: 34px 26px;
+    text-align: center;
+    font-size: 1.5rem;
+    font-weight: 700;
+    min-height: 150px;
+    display: flex; align-items: center; justify-content: center;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .question-box .emoji-chip {
+    font-size: 3rem; display: block; margin-bottom: 12px;
+  }
+
+  .qs-hint { margin-top: 12px; font-size: 0.95rem; opacity: 0.8; font-style: italic; }
+
+  .phrases-box {
+    margin-top: 14px;
+    background: #e8f4ff;
+    border: 4px dashed var(--cyan);
+    border-radius: 16px;
+    padding: 14px;
+    font-size: 0.9rem;
+  }
+  .phrases-box .phrases-title {
+    font-family: 'Permanent Marker', cursive; font-size: 1rem; color: #005792; margin: 0 0 6px 0;
+  }
+  .phrases-box ul { margin: 0; padding-left: 18px; font-size: 0.9rem; color: #333; }
+  .phrases-box li { margin-bottom: 4px; }
+
+  .timer-wrap { position: relative; width: 70px; height: 70px; margin: 0 auto 14px; }
+  .timer-ring {
+    width: 100%; height: 100%;
+    border-radius: 50%;
+    background: conic-gradient(var(--red) 0deg, #e0e0e0 0deg);
+    transform: rotate(-90deg);
+    transition: transform 0.1s linear;
+    box-shadow: inset 0 0 12px rgba(0,0,0,0.15);
+  }
+
+  .record-wrap { margin-top: 16px; text-align: center; }
+
+  .btn-record {
+    font-family: inherit;
+    font-size: 1.15rem;
+    font-weight: 800;
+    padding: 18px 36px;
+    border-radius: 50px;
+    border: 5px solid #000;
+    background: var(--red);
+    color: #fff;
+    cursor: pointer;
+    box-shadow: 6px 6px 0 #000;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .btn-record.recording {
+    background: #00e676;
+    animation: pulse 1.2s infinite;
+  }
+
+  @keyframes pulse {
+    0% { box-shadow: 0 0 0 0 rgba(0,230,118,0.7); transform: scale(1); }
+    70% { box-shadow: 0 0 0 20px rgba(0,230,118,0); transform: scale(1.05); }
+    100% { box-shadow: 0 0 0 0 rgba(0,230,118,0); transform: scale(1); }
+  }
+
+  .btn-record:disabled { opacity: 0.55; cursor: not-allowed; }
+
+  .mic-wave { display: inline-block; margin-left: 10px; vertical-align: middle; }
+  .mic-bar {
+    display: inline-block; width: 6px; height: 24px; background: #fff;
+    border-radius: 4px; margin: 0 2px; animation: bounce 1.2s infinite ease-in-out;
+    box-shadow: 0 0 8px rgba(255,255,255,0.8);
+  }
+  .mic-bar:nth-child(2) { animation-delay: 0.2s; height: 34px; }
+  .mic-bar:nth-child(3) { animation-delay: 0.4s; height: 18px; }
+  .mic-bar:nth-child(4) { animation-delay: 0.6s; height: 28px; }
+  .mic-bar:nth-child(5) { animation-delay: 0.8s; height: 22px; }
+  @keyframes bounce {
+    0%, 100% { transform: scaleY(1); }
+    50% { transform: scaleY(1.6); }
+  }
+
+  .audio-status { margin-top: 10px; font-size: 0.9rem; font-weight: 700; height: 1.2rem; }
+
+  .playback { margin-top: 10px; display: none; gap: 8px; justify-content: center; align-items: center; }
+  .playback audio { width: 180px; }
+
+  .nav-row { display: flex; gap: 10px; justify-content: center; margin-top: 22px; flex-wrap: wrap; }
+
+  .celebrate { text-align: center; }
+  .celebrate .big-number {
+    font-family: 'Permanent Marker', cursive;
+    font-size: clamp(3rem, 12vw, 7rem);
+    color: var(--accent);
+    -webkit-text-stroke: 3px #000;
+    line-height: 1;
+    display: inline-block;
+    text-shadow: 4px 4px 0 var(--pink);
+    margin: 14px 0;
+  }
+
+  .stars { font-size: 2.5rem; margin: 12px 0; line-height: 1; display: flex; justify-content: center; gap: 10px; }
+
+  .msg-box { background: var(--paper); border: 5px solid #000; border-radius: var(--radius);
+             padding: 24px; margin: 22px 0; font-size: 1.1rem; line-height: 1.6; box-shadow: var(--shadow); }
+
+  .footer-note { text-align: center; opacity: 0.85; font-size: 0.9rem; margin-top: 10px; }
+
+  .hidden { display: none !important; }
+  .center { text-align: center; }
+  .shake { animation: shake 0.5s; }
+  @keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    20%, 60% { transform: translateX(-8px); }
+    40%, 80% { transform: translateX(8px); }
+  }
+
+  @media (max-width: 480px) {
+    header { padding: 12px 12px; flex-direction: column; align-items: stretch; gap: 10px; }
+    .logo { margin-right: 0; text-align: center; }
+    .hud { justify-content: center; width: 100%; }
+    .card { padding: 20px 16px; }
+    .question-box { font-size: 1.2rem; padding: 26px 18px; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    * { animation: none !important; transition: none !important; }
+    .timer-ring { transition: none; }
+  }
+
+  /* ---------- vocabulary modal ---------- */
+  .vocab-modal {
+    position: fixed; inset: 0; z-index: 100; display: none;
+    align-items: center; justify-content: center;
+    background: rgba(0,0,0,0.6); backdrop-filter: blur(6px);
+  }
+  .vocab-panel {
+    background: var(--paper); border: 5px solid #000;
+    border-radius: var(--radius); padding: 28px; width: 90%;
+    max-width: 640px; max-height: 85vh; overflow-y: auto;
+    box-shadow: var(--shadow); position: relative;
+    animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) both;
+  }
+  .vocab-close {
+    position: absolute; top: 14px; right: 16px;
+    font-size: 2rem; cursor: pointer; border: 3px solid #000;
+    border-radius: 50%; width: 44px; height: 44px;
+    background: var(--paper); display: flex; align-items: center;
+    justify-content: center; line-height: 1; box-shadow: var(--shadow);
+  }
+  .vocab-close:hover { background: #f0f0f0; }
+  .vocab-panel h3 { margin-top: 0; font-size: 1.6rem; text-align: center; }
+  .vocab-list { list-style: none; padding: 0; margin: 16px 0 0 0; }
+  .vocab-list li {
+    border: 3px solid #000; border-radius: 14px; padding: 14px 18px;
+    margin-bottom: 12px; background: #fffaf0; position: relative;
+  }
+  .vocab-word { font-weight: 800; color: var(--red); font-size: 1.25rem; }
+  .vocab-def { margin: 4px 0 2px 0; font-size: 0.98rem; }
+  .vocab-ex { font-style: italic; font-size: 0.9rem; color: #555; margin: 0; }
+  .btn-vocab {
+    font-family: inherit; font-weight: 700; font-size: 0.95rem;
+    padding: 8px 16px; border-radius: 10px; border: 3px solid #000;
+    background: var(--cyan); color: var(--ink); cursor: pointer;
+    box-shadow: 4px 4px 0 #000; margin-left: 8px;
+  }
+  .btn-vocab:hover { filter: brightness(1.15); }
+  .btn-vocab:active { transform: translate(2px,2px); box-shadow: 2px 2px 0 #000; }
+</style>
+</head>
+<body>
+
+<canvas id="confetti"></canvas>
+
+<header>
+  <a href="#" class="logo" onclick="app.goHome(); return false;">LOL<span>Speaking</span> Lab</a>
+  <div class="hud">
+    <span class="pill timer">⏱ <span id="timer">0:00</span></span>
+    <span class="pill score">💯 <span id="score">0</span></span>
+    <button class="btn-vocab" onclick="app.toggleVocab()">📚 Vocab</button>
+  </div>
+</header>
+
+<main>
+  <!-- HOME -->
+  <section id="home" class="active card">
+    <div class="hero">
+      <h1>LOL Speaking Lab</h1>
+      <div class="subtitle">B1 level · 5 themes · 50 questions · Fun speaking practice</div>
+      <div class="btn-row">
+        <button class="btn big primary" onclick="app.startExerciseSelect()">Start Speaking</button>
+        <button class="btn big ghost" onclick="app.resetProgress()">Reset Progress</button>
+      </div>
+      <p class="footer-note">Level B1 (Intermediate). Speak out loud, record your voice, and have fun!</p>
+    </div>
+  </section>
+
+  <!-- EXERCISE SELECT -->
+  <section id="exercise-select" class="card">
+    <div class="ex-select-title">
+      <h2>Pick Your Chaos</h2>
+      <p class="lead">Each theme has 10 questions. Speak freely — there are no wrong answers, only funny ones.</p>
+    </div>
+    <div class="exercise-grid" id="ex-grid"></div>
+    <div class="center" style="margin-top: 18px;">
+      <button class="btn ghost" onclick="app.goHome()">← Back to Lab</button>
+    </div>
+  </section>
+
+  <!-- QUESTION -->
+  <section id="question" class="card">
+    <div class="qs-header">
+      <div>
+        <span id="qs-theme" class="tag">🎭</span>
+        <h2 id="qs-title" class="qs-title">Exercise Title</h2>
+      </div>
+      <div class="qs-progress" id="qs-progress">Question 1 of 10</div>
+    </div>
+
+    <div class="timer-wrap" id="timer-wrap">
+      <div class="timer-ring" id="timer-ring"></div>
+    </div>
+
+    <div class="question-box" id="question-box">
+      <span class="emoji-chip" id="qs-emoji">❓</span>
+      <span id="qs-text">Loading question...</span>
+    </div>
+    <div class="qs-hint" id="qs-hint">Say it out loud!</div>
+
+    <div class="phrases-box" id="phrases-box">
+      <p class="phrases-title" id="phrases-title">Useful phrases</p>
+      <ul id="phrases-list"></ul>
+    </div>
+
+    <div class="record-wrap">
+      <button class="btn-record" id="btn-record" onclick="app.toggleRecord()">
+        🎙 <span id="record-label">Record Answer</span>
+        <span class="mic-wave" id="mic-wave">
+          <span class="mic-bar"></span><span class="mic-bar"></span><span class="mic-bar"></span><span class="mic-bar"></span><span class="mic-bar"></span>
+        </span>
+      </button>
+      <div class="audio-status" id="audio-status"></div>
+      <div class="playback" id="playback"></div>
+    </div>
+
+    <div class="nav-row">
+      <button class="btn ghost" onclick="app.prevQuestion()">← Previous</button>
+      <button class="btn primary big" id="btn-next" onclick="app.nextQuestion()">Next Question →</button>
+    </div>
+  </section>
+
+  <!-- RESULT -->
+  <section id="result" class="card">
+    <div class="celebrate">
+      <h2>Exercise Complete!</h2>
+      <div class="big-number" id="result-score">0</div>
+      <div class="stars" id="result-stars"></div>
+      <div class="msg-box" id="result-msg">Great job!</div>
+      <div class="btn-row" style="justify-content:center;">
+        <button class="btn primary big" onclick="app.continueHome()">Back to Lab</button>
+        <button class="btn ghost big" onclick="app.retryExercise()">Try Again</button>
+      </div>
+      <p class="footer-note" id="result-note"></p>
+    </div>
+  </section>
+
+  <div class="vocab-modal" id="vocab-modal">
+    <div class="vocab-panel">
+      <button class="vocab-close" onclick="app.toggleVocab()">✕</button>
+      <h3 id="vocab-title">Vocabulary</h3>
+      <ul class="vocab-list" id="vocab-list"></ul>
+    </div>
+  </div>
+</main>
+
+<script>
+/* ============================================================
+   LOL Speaking Lab — B1 level (intermediate ESL)
+   ============================================================ */
+const app = (() => {
+  const state = {
+    currentExercise: null,
+    currentQuestion: 0,
+    score: 0,
+    answers: {},
+    completed: new Set(),
+    settings: { timerSeconds: 60, sound: true },
+    audioCtx: null,
+    mediaRecorder: null,
+    recordedChunks: [],
+    audioUrl: null,
+    timerInterval: null,
+    timeLeft: 0,
+    stream: null,
+  };
+
+  /* ---------- B1 content: 5 exercises x 10 questions = 50 ---------- */
+  const EXERCISES = [
+    {
+      id: 'emoji-acting',
+      title: 'Emoji Acting Class',
+      emoji: '🎭',
+      tagClass: 'emoji-acting',
+      hint: 'Act out the situation. Use your voice, face, and hands.',
+      vocab: [
+        { w: "favorite", d: "the one you like the most", ex: "She is my favorite singer." },
+        { w: "street", d: "a road in a city or town", ex: "I saw him on the street." },
+        { w: "spicy", d: "with a strong, hot flavor", ex: "This food is too spicy!" },
+        { w: "silent", d: "without any sound", ex: "The room was completely silent." },
+        { w: "library", d: "a place where you can borrow books", ex: "I study at the library." },
+      ],
+      phrases: [
+        "I feel really ...",
+        "Oh no! What happened?",
+        "I can't believe it!",
+        "This is amazing!",
+      ],
+      questions: [
+        { q: "You see your favorite singer on the street. What do you say?", e: "😍" },
+        { q: "You eat food that is too spicy. React!", e: "🌶️" },
+        { q: "You are a cat trying to catch a laser dot.", e: "🐱" },
+        { q: "You win a trip to Hawaii but cannot tell anyone.", e: "💰" },
+        { q: "You dance in a room where everyone is silent.", e: "💃" },
+        { q: "You are a baby taking your first steps.", e: "👶" },
+        { q: "You sneeze during a very quiet exam.", e: "🤧" },
+        { q: "You put on a superhero cape for the first time.", e: "🦸" },
+        { q: "You find a big spider in your shower.", e: "🕷️" },
+        { q: "You whisper a secret inside a library.", e: "🤫" },
+      ]
+    },
+    {
+      id: 'worst-excuse',
+      title: 'The Worst Excuse Ever',
+      emoji: '💭',
+      tagClass: 'emoji-excuse',
+      hint: 'Make up a silly excuse. The crazier, the better.',
+      vocab: [
+        { w: "late", d: "after the expected time", ex: "I am late for class." },
+        { w: "homework", d: "school work to do at home", ex: "I didn't do my homework." },
+        { w: "forgive", d: "to stop being angry with someone", ex: "Can you forgive me?" },
+        { w: "wedding", d: "a ceremony where two people marry", ex: "I am going to a wedding." },
+        { w: "party", d: "a social gathering for fun", ex: "There is a party tonight." },
+      ],
+      phrases: [
+        "I'm sorry because ...",
+        "The problem was ...",
+        "Unfortunately, ...",
+        "Can you forgive me?",
+      ],
+      questions: [
+        { q: "Why are you late for class or work?", e: "⏰" },
+        { q: "Why didn't you do your homework?", e: "📚" },
+        { q: "Why did you eat the last slice of pizza?", e: "🍕" },
+        { q: "Why is your dog wearing your socks?", e: "🐶" },
+        { q: "Why did you call your teacher 'Mom'?", e: "👩‍🏫" },
+        { q: "Why did you bring a llama to the office?", e: "🦙" },
+        { q: "Why is there a cake in the bathtub?", e: "🛁" },
+        { q: "Why are you wearing pajamas to a wedding?", e: "👰" },
+        { q: "Why did you break a vase?", e: "🏺" },
+        { q: "Why can't you come to the party tonight?", e: "🎉" },
+      ]
+    },
+    {
+      id: 'terrible-advice',
+      title: 'Terrible Advice Guru',
+      emoji: '😈',
+      tagClass: 'emoji-advice',
+      hint: 'Give bad advice. Be helpful in the worst way possible.',
+      vocab: [
+        { w: "advice", d: "suggestions about what to do", ex: "My advice is to study." },
+        { w: "exercise", d: "physical activity to stay healthy", ex: "I want to start exercising." },
+        { w: "messy", d: "not clean or tidy", ex: "My room is very messy." },
+        { w: "arrive", d: "to reach a place", ex: "I always arrive on time." },
+        { w: "idea", d: "a thought or suggestion", ex: "It's a good idea to save money." },
+      ],
+      phrases: [
+        "I think you should ...",
+        "My advice is to ...",
+        "Don't forget to ...",
+        "It's a good idea to ...",
+      ],
+      questions: [
+        { q: "How do I wake up early every day?", e: "⏰" },
+        { q: "How do I make new friends?", e: "🤝" },
+        { q: "How do I study for a big test?", e: "📖" },
+        { q: "How do I say sorry to a friend?", e: "🙏" },
+        { q: "How do I save money?", e: "💰" },
+        { q: "How do I cook dinner for my family?", e: "🍳" },
+        { q: "How do I start exercising?", e: "🏃" },
+        { q: "How do I text someone I like?", e: "📱" },
+        { q: "How do I clean my messy room?", e: "🧹" },
+        { q: "How do I always arrive on time?", e: "🚗" },
+      ]
+    },
+    {
+      id: 'celebrity-interview',
+      title: 'Celebrity Interview',
+      emoji: '🌟',
+      tagClass: 'emoji-celeb',
+      hint: 'Answer as if you ARE that celebrity. Stay in character.',
+      vocab: [
+        { w: "ingredient", d: "a part of a recipe or dish", ex: "What is your secret ingredient?" },
+        { w: "routine", d: "things you do regularly", ex: "What is your beauty routine?" },
+        { w: "weakness", d: "something you are not good at", ex: "What is your weakness?" },
+        { w: "collection", d: "a group of similar things", ex: "Describe your new collection." },
+        { w: "treat", d: "something special to eat or enjoy", ex: "What is your favorite treat?" },
+      ],
+      phrases: [
+        "In my opinion, ...",
+        "The best part was ...",
+        "I started ... when I was ...",
+        "My fans love ...",
+      ],
+      questions: [
+        { q: "You are a famous chef. What is your secret ingredient?", e: "👨‍🍳" },
+        { q: "You are a rock star. Tell us about a concert.", e: "🎸" },
+        { q: "You are an astronaut. What does space food taste like?", e: "🚀" },
+        { q: "You are a movie star. What is your beauty routine?", e: "🎬" },
+        { q: "You are a pro gamer. How many hours do you train?", e: "🎮" },
+        { q: "You are a fashion designer. Describe your new clothes.", e: "👗" },
+        { q: "You are a magician. How does your trick work?", e: "🎩" },
+        { q: "You are a YouTuber. What was your first video?", e: "📹" },
+        { q: "You are a superhero. What is your weakness?", e: "🦸‍♀️" },
+        { q: "You are a talking dog. What is your favorite treat?", e: "🐕" },
+      ]
+    },
+    {
+      id: 'story-chain',
+      title: 'Story Chain Madness',
+      emoji: '📖',
+      tagClass: 'emoji-story',
+      hint: 'Continue the story. Make it weirder sentence by sentence.',
+      vocab: [
+        { w: "suddenly", d: "happening quickly and unexpectedly", ex: "Suddenly, I saw a dragon." },
+        { w: "closet", d: "a small room for clothes", ex: "I found a door in my closet." },
+        { w: "disappear", d: "to stop being visible", ex: "My socks keep disappearing." },
+        { w: "treasure", d: "valuable things like gold or jewels", ex: "I found a treasure map." },
+        { w: "optional", d: "not required; you can choose", ex: "Homework is now optional." },
+      ],
+      phrases: [
+        "Suddenly, ...",
+        "Then, I saw ...",
+        "I didn't know what to do.",
+        "In the end, ...",
+      ],
+      questions: [
+        { q: 'Continue: "I woke up and my toast was talking to me…"', e: "🍞" },
+        { q: 'Continue: "The teacher turned into a banana during class…"', e: "🍌" },
+        { q: 'Continue: "I opened the fridge and found a small dragon…"', e: "🐉" },
+        { q: 'Continue: "My pet goldfish gave me life advice…"', e: "🐟" },
+        { q: 'Continue: "I swapped bodies with my gym teacher…"', e: "🏋️" },
+        { q: 'Continue: "The school bus started flying to Mars…"', e: "🚌" },
+        { q: 'Continue: "I found a door in my closet that leads to…"', e: "🚪" },
+        { q: 'Continue: "My socks keep disappearing. I found out why…"', e: "🧦" },
+        { q: 'Continue: "The principal said homework is now optional… forever!"', e: "🏫" },
+        { q: 'Continue: "I ordered a pizza with a treasure map…"', e: "🍕" },
+      ]
+    },
+  ];
+
+  /* ---------- init ---------- */
+  function init() {
+    loadState();
+    renderExerciseGrid();
+    updateHUD();
+    setupAudio();
+    document.addEventListener('keydown', (e) => {
+      if (e.code === 'Space' && document.getElementById('question').classList.contains('active')) {
+        e.preventDefault();
+        app.toggleRecord();
+      }
+    });
+  }
+
+  function setupAudio() {
+    try {
+      const AC = window.AudioContext || window.webkitAudioContext;
+      if (AC) state.audioCtx = new AC();
+    } catch (err) { console.warn('AudioContext unavailable', err); }
+  }
+
+  /* ---------- sound effects ---------- */
+  function playSound(kind) {
+    if (!state.settings.sound || !state.audioCtx) return;
+    const t = state.audioCtx.currentTime;
+
+    const make = (type, freq, dur, gainV) => {
+      const o = state.audioCtx.createOscillator();
+      const g = state.audioCtx.createGain();
+      o.connect(g); g.connect(state.audioCtx.destination);
+      o.type = type; o.frequency.value = freq;
+      g.gain.setValueAtTime(gainV, t); g.gain.exponentialRampToValueAtTime(0.001, t + dur);
+      o.start(t); o.stop(t + dur);
+    };
+
+    if (kind === 'click') { make('square', 880, 0.08, 0.1); }
+    else if (kind === 'success') {
+      [660, 784, 988, 1320].forEach((f, i) => make('triangle', f, 0.25, 0.08));
+      // stagger via separate starts
+      const base = t;
+      [660, 784, 988, 1320].forEach((f, i) => {
+        const o = state.audioCtx.createOscillator(); const g = state.audioCtx.createGain();
+        o.connect(g); g.connect(state.audioCtx.destination);
+        o.type = 'triangle'; o.frequency.value = f;
+        const st = base + i * 0.07;
+        g.gain.setValueAtTime(0.08, st); g.gain.exponentialRampToValueAtTime(0.001, st + 0.25);
+        o.start(st); o.stop(st + 0.25);
+      });
+    } else if (kind === 'fail') {
+      const o = state.audioCtx.createOscillator(); const g = state.audioCtx.createGain();
+      o.connect(g); g.connect(state.audioCtx.destination);
+      o.type = 'sawtooth'; o.frequency.setValueAtTime(150, t); o.frequency.linearRampToValueAtTime(80, t + 0.3);
+      g.gain.setValueAtTime(0.15, t); g.gain.linearRampToValueAtTime(0.001, t + 0.35);
+      o.start(t); o.stop(t + 0.35);
+    } else if (kind === 'tick') { make('sine', 1200, 0.05, 0.04); }
+    else if (kind === 'confetti') {
+      [523, 659, 784, 1047].forEach((f, i) => {
+        const st = t + i * 0.05;
+        const o = state.audioCtx.createOscillator(); const g = state.audioCtx.createGain();
+        o.connect(g); g.connect(state.audioCtx.destination);
+        o.type = 'sine'; o.frequency.value = f;
+        g.gain.setValueAtTime(0.06, st); g.gain.exponentialRampToValueAtTime(0.001, st + 0.4);
+        o.start(st); o.stop(st + 0.4);
+      });
+    }
+  }
+
+  /* ---------- persistence ---------- */
+  function loadState() {
+    try {
+      const raw = localStorage.getItem('lol-speaking-lab-b1');
+      if (raw) {
+        const data = JSON.parse(raw);
+        if (data.score != null) state.score = data.score;
+        if (data.completed) state.completed = new Set(data.completed);
+        if (data.answers) state.answers = data.answers;
+      }
+    } catch (e) { console.warn('load failed', e); }
+  }
+
+  function saveState() {
+    try {
+      localStorage.setItem('lol-speaking-lab-b1', JSON.stringify({
+        score: state.score,
+        completed: Array.from(state.completed),
+        answers: state.answers,
+      }));
+    } catch (e) { console.warn('save failed', e); }
+  }
+
+  /* ---------- rendering ---------- */
+  function renderExerciseGrid() {
+    const grid = document.getElementById('ex-grid');
+    grid.innerHTML = EXERCISES.map((ex, i) => {
+      const done = state.completed.has(i);
+      return `
+        <div class="ex-card" onclick="app.startExercise(${i})">
+          <span class="big-emoji">${ex.emoji}</span>
+          <div class="count">${done ? '✅ Done' : '10 Q'}</div>
+          <h3>${ex.title}</h3>
+          <p>${ex.hint}</p>
+        </div>
+      `;
+    }).join('');
+  }
+
+  function updateHUD() {
+    document.getElementById('timer').textContent = formatTime(state.timeLeft || 0);
+    document.getElementById('score').textContent = state.score;
+  }
+
+  function formatTime(s) {
+    const m = Math.floor(s / 60);
+    const sec = s % 60;
+    return `${m}:${sec.toString().padStart(2, '0')}`;
+  }
+
+  /* ---------- navigation ---------- */
+  function setScreen(id) {
+    document.querySelectorAll('main section').forEach(s => s.classList.remove('active'));
+    document.getElementById(id).classList.add('active');
+  }
+
+  function goHome() {
+    stopTimer();
+    stopRecord();
+    setScreen('home');
+    updateHUD();
+  }
+
+  function startExerciseSelect() {
+    renderExerciseGrid();
+    setScreen('exercise-select');
+  }
+
+  function resetProgress() {
+    if (!confirm('Reset all your progress? This cannot be undone.')) return;
+    state.score = 0;
+    state.completed = new Set();
+    state.answers = {};
+    saveState();
+    renderExerciseGrid();
+    updateHUD();
+    playSound('click');
+  }
+
+  function toggleVocab() {
+    const modal = document.getElementById('vocab-modal');
+    const list = document.getElementById('vocab-list');
+    const title = document.getElementById('vocab-title');
+    if (modal.style.display === 'flex') {
+      modal.style.display = 'none';
+      return;
+    }
+    if (state.currentExercise !== null) {
+      const ex = EXERCISES[state.currentExercise];
+      title.textContent = ex.title + ' — Key Vocabulary';
+      list.innerHTML = ex.vocab.map(v => `
+        <li>
+          <span class="vocab-word">${v.w}</span>
+          <p class="vocab-def">${v.d}</p>
+          <p class="vocab-ex">Example: ${v.ex}</p>
+        </li>
+      `).join('');
+    }
+    modal.style.display = 'flex';
+  }
+
+  /* ---------- exercise flow ---------- */
+  function startExercise(index) {
+    state.currentExercise = index;
+    state.currentQuestion = 0;
+    state.timeLeft = state.settings.timerSeconds;
+    state.answers[index] = state.answers[index] || {};
+    loadQuestion();
+    setScreen('question');
+  }
+
+  function loadQuestion() {
+    const ex = EXERCISES[state.currentExercise];
+    const q = ex.questions[state.currentQuestion];
+
+    document.getElementById('qs-theme').textContent = ex.emoji;
+    document.getElementById('qs-theme').className = 'tag ' + ex.tagClass;
+    document.getElementById('qs-title').textContent = ex.title;
+    document.getElementById('qs-progress').textContent = `Question ${state.currentQuestion + 1} of ${ex.questions.length}`;
+    document.getElementById('qs-emoji').textContent = q.e;
+    document.getElementById('qs-text').textContent = q.q;
+    document.getElementById('qs-hint').textContent = ex.hint;
+
+    // useful phrases
+    const list = document.getElementById('phrases-list');
+    list.innerHTML = ex.phrases.map(p => `<li>${p}</li>`).join('');
+
+    // reset recording UI
+    stopRecord();
+    const btn = document.getElementById('btn-record');
+    btn.disabled = false;
+    btn.classList.remove('recording');
+    document.getElementById('record-label').textContent = 'Record Answer';
+    document.getElementById('mic-wave').style.display = 'none';
+    document.getElementById('audio-status').textContent = '';
+    document.getElementById('playback').style.display = 'none';
+    document.getElementById('playback').innerHTML = '';
+
+    document.getElementById('btn-next').textContent =
+      state.currentQuestion === ex.questions.length - 1 ? 'Finish Exercise →' : 'Next Question →';
+    document.getElementById('btn-next').disabled = false;
+
+    const prev = state.answers[state.currentExercise][state.currentQuestion];
+    if (prev && prev.audioUrl) {
+      showPlayback(prev.audioUrl);
+    }
+
+    state.timeLeft = state.settings.timerSeconds;
+    updateTimerDisplay();
+    startTimer();
+  }
+
+  /* ---------- timer ---------- */
+  function startTimer() {
+    stopTimer();
+    state.timerInterval = setInterval(() => {
+      state.timeLeft--;
+      updateTimerDisplay();
+      updateTimerRing();
+      if (state.timeLeft <= 0) {
+        stopTimer();
+        playSound('fail');
+        autoAdvance();
+      }
+    }, 1000);
+  }
+
+  function stopTimer() {
+    if (state.timerInterval) {
+      clearInterval(state.timerInterval);
+      state.timerInterval = null;
+    }
+  }
+
+  function updateTimerDisplay() {
+    document.getElementById('timer').textContent = formatTime(state.timeLeft);
+    updateHUD();
+  }
+
+  function updateTimerRing() {
+    const ring = document.getElementById('timer-ring');
+    const total = state.settings.timerSeconds;
+    const pct = Math.max(0, state.timeLeft) / total;
+    const deg = 360 * pct;
+    ring.style.background = `conic-gradient(var(--red) ${deg}deg, #e0e0e0 ${deg}deg)`;
+  }
+
+  function autoAdvance() {
+    document.getElementById('btn-next').disabled = true;
+    saveCurrentAnswer();
+    const ex = EXERCISES[state.currentExercise];
+    if (state.currentQuestion < ex.questions.length - 1) {
+      state.currentQuestion++;
+      loadQuestion();
+    } else {
+      finishExercise();
+    }
+  }
+
+  /* ---------- recording ---------- */
+  async function toggleRecord() {
+    const btn = document.getElementById('btn-record');
+    const mic = document.getElementById('mic-wave');
+    const status = document.getElementById('audio-status');
+    const label = document.getElementById('record-label');
+
+    if (state.mediaRecorder && state.mediaRecorder.state === 'recording') {
+      state.mediaRecorder.stop();
+      stopStream();
+      btn.classList.remove('recording');
+      mic.style.display = 'none';
+      label.textContent = 'Record Answer';
+      status.textContent = 'Saving...';
+      btn.disabled = true;
+      playSound('click');
+      return;
+    }
+
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      state.stream = stream;
+      const chunks = [];
+      state.recordedChunks = chunks;
+      const rec = new MediaRecorder(stream, { mimeType: 'audio/webm' });
+      state.mediaRecorder = rec;
+
+      rec.ondataavailable = (e) => { if (e.data.size > 0) chunks.push(e.data); };
+
+      rec.onstop = () => {
+        const blob = new Blob(chunks, { type: 'audio/webm' });
+        const url = URL.createObjectURL(blob);
+        state.audioUrl = url;
+        showPlayback(url);
+        saveCurrentAnswer();
+        status.textContent = 'Recording saved!';
+        btn.disabled = false;
+        playSound('success');
+      };
+
+      rec.onerror = () => {
+        status.textContent = 'Recording failed. Try again.';
+        btn.disabled = false;
+      };
+
+      rec.start();
+      btn.classList.add('recording');
+      mic.style.display = 'inline-block';
+      label.textContent = 'Stop Recording';
+      status.textContent = 'Recording... speak now!';
+      playSound('click');
+    } catch (err) {
+      console.warn(err);
+      status.textContent = 'Microphone access denied or unavailable.';
+    }
+  }
+
+  function stopRecord() {
+    if (state.mediaRecorder && state.mediaRecorder.state === 'recording') {
+      state.mediaRecorder.stop();
+    }
+    stopStream();
+    state.mediaRecorder = null;
+    document.getElementById('btn-record').classList.remove('recording');
+    document.getElementById('mic-wave').style.display = 'none';
+  }
+
+  function stopStream() {
+    if (state.stream) {
+      state.stream.getTracks().forEach(t => t.stop());
+      state.stream = null;
+    }
+  }
+
+  function showPlayback(url) {
+    const pb = document.getElementById('playback');
+    pb.innerHTML = `<audio controls src="${url}" style="width:180px;"></audio>
+      <button class="btn ghost" onclick="app.deleteRecording()">Delete</button>`;
+    pb.style.display = 'flex';
+  }
+
+  function deleteRecording() {
+    state.audioUrl = null;
+    document.getElementById('playback').style.display = 'none';
+    document.getElementById('playback').innerHTML = '';
+    saveCurrentAnswer();
+    document.getElementById('audio-status').textContent = 'Recording deleted.';
+    playSound('click');
+  }
+
+  function saveCurrentAnswer() {
+    if (state.currentExercise === null) return;
+    const ex = EXERCISES[state.currentExercise];
+    state.answers[state.currentExercise][state.currentQuestion] = {
+      question: ex.questions[state.currentQuestion].q,
+      audioUrl: state.audioUrl || null,
+      time: Date.now(),
+    };
+    saveState();
+  }
+
+  /* ---------- question navigation ---------- */
+  function nextQuestion() {
+    playSound('click');
+    saveCurrentAnswer();
+    const ex = EXERCISES[state.currentExercise];
+    if (state.currentQuestion < ex.questions.length - 1) {
+      state.currentQuestion++;
+      loadQuestion();
+    } else {
+      finishExercise();
+    }
+  }
+
+  function prevQuestion() {
+    playSound('click');
+    if (state.currentQuestion > 0) {
+      state.currentQuestion--;
+      loadQuestion();
+    }
+  }
+
+  /* ---------- finish ---------- */
+  function finishExercise() {
+    stopTimer();
+    stopRecord();
+    const exIdx = state.currentExercise;
+    const ex = EXERCISES[exIdx];
+    const answers = state.answers[exIdx] || {};
+
+    let earned = 0;
+    for (let i = 0; i < ex.questions.length; i++) {
+      if (answers[i] && answers[i].audioUrl) earned++;
+    }
+
+    const alreadyDone = state.completed.has(exIdx);
+    if (!alreadyDone) {
+      state.completed.add(exIdx);
+      state.score += earned;
+    }
+    saveState();
+
+    document.getElementById('result-score').textContent = earned;
+    document.getElementById('result-stars').textContent = '★'.repeat(earned) + '☆'.repeat(10 - earned);
+    const msg = earned >= 8 ? 'Excellent! You are a speaking star!'
+      : earned >= 5 ? 'Good job! Keep practicing!'
+      : 'Nice effort! Try again for more stars.';
+    document.getElementById('result-msg').textContent = msg;
+    document.getElementById('result-note').textContent = alreadyDone
+      ? `You already completed this theme. Total score: ${state.score}`
+      : `+${earned} points! Total score: ${state.score}`;
+
+    playSound('confetti');
+    renderExerciseGrid();
+    startConfetti();
+    setScreen('result');
+  }
+
+  function continueHome() { goHome(); }
+
+  function retryExercise() {
+    if (state.currentExercise === null) return;
+    startExercise(state.currentExercise);
+  }
+
+  /* ---------- confetti ---------- */
+  function startConfetti() {
+    const canvas = document.getElementById('confetti');
+    const ctx = canvas.getContext('2d');
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+
+    const pieces = [];
+    const colors = ['#ff00cc', '#ffd700', '#00f2ff', '#b5ff00', '#ff9f1c', '#ff4757'];
+
+    for (let i = 0; i < 150; i++) {
+      pieces.push({
+        x: Math.random() * canvas.width,
+        y: Math.random() * canvas.height - canvas.height,
+        w: Math.random() * 12 + 6,
+        h: Math.random() * 12 + 6,
+        color: colors[Math.floor(Math.random() * colors.length)],
+        vx: (Math.random() - 0.5) * 4,
+        vy: Math.random() * 6 + 2,
+        rot: Math.random() * 360,
+        vrot: (Math.random() - 0.5) * 10,
+      });
+    }
+
+    let frame = 0;
+    function draw() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      for (const p of pieces) {
+        p.x += p.vx;
+        p.y += p.vy;
+        p.rot += p.vrot;
+        ctx.save();
+        ctx.translate(p.x, p.y);
+        ctx.rotate((p.rot * Math.PI) / 180);
+        ctx.fillStyle = p.color;
+        ctx.fillRect(-p.w / 2, -p.h / 2, p.w, p.h);
+        ctx.restore();
+      }
+      frame++;
+      if (frame < 300) requestAnimationFrame(draw);
+    }
+    draw();
+  }
+
+  window.addEventListener('resize', () => {
+    const c = document.getElementById('confetti');
+    c.width = window.innerWidth;
+    c.height = window.innerHeight;
+  });
+
+  return {
+    init,
+    goHome,
+    startExerciseSelect,
+    startExercise,
+    resetProgress,
+    nextQuestion,
+    prevQuestion,
+    finishExercise,
+    continueHome,
+    retryExercise,
+    toggleVocab,
+    toggleRecord,
+    deleteRecording,
+  };
+})();
+
+app.init();
+</script>
+</body>
+</html>
